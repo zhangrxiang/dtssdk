@@ -2,8 +2,8 @@ package dtssdk
 
 import (
 	"fmt"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/codec"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/model"
+	"github.com/zing-dev/dts-sdk/dtssdk/codec"
+	"github.com/zing-dev/dts-sdk/dtssdk/model"
 	"log"
 	"net"
 	"testing"

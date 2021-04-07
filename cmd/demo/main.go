@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/model"
+	"github.com/zing-dev/dts-sdk/dtssdk"
+	"github.com/zing-dev/dts-sdk/dtssdk/model"
 	"log"
 	"os"
 	"os/signal"
@@ -14,7 +14,9 @@ import (
 func main() {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	client := dtssdk.NewDTSClient("192.168.0.215")
+	client := dtssdk.NewClient(dtssdk.Options{
+		Ip: "192.168.0.215",
+	})
 	client.CallConnected(func(addr string) {
 		log.Println(fmt.Sprintf("连接成功:%s!", addr))
 		if rep, err := client.GetDeviceID(); err == nil {

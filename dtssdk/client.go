@@ -3,10 +3,10 @@ package dtssdk
 import (
 	"bytes"
 	"fmt"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/codec"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/model"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/utils"
 	"github.com/kataras/iris/core/errors"
+	"github.com/zing-dev/dts-sdk/dtssdk/codec"
+	"github.com/zing-dev/dts-sdk/dtssdk/model"
+	"github.com/zing-dev/dts-sdk/dtssdk/utils"
 	"log"
 	"net"
 	"sync"

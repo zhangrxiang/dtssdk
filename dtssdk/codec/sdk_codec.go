@@ -1,9 +1,9 @@
 package codec
 
 import (
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/model"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/utils"
 	"github.com/golang/protobuf/proto"
+	"github.com/zing-dev/dts-sdk/dtssdk/model"
+	"github.com/zing-dev/dts-sdk/dtssdk/utils"
 )
 
 //length 4 msg_id 1  包体 。。。

@@ -2,8 +2,8 @@ package dtssdk
 
 import (
 	"errors"
-	"github.com/Atian-OE/DTSSDK_Golang/dtssdk/model"
 	"github.com/golang/protobuf/proto"
+	"github.com/zing-dev/dts-sdk/dtssdk/model"
 	"net"
 )
 
