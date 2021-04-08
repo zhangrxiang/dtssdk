@@ -1,13 +1,13 @@
 package models
 
 type Temperature struct {
-	Max float32   `json:"max"`
-	Avg float32   `json:"avg"`
-	Min float32   `json:"min"`
-	At  TimeLocal `json:"at,omitempty"`
+	Max float32    `json:"max"`
+	Avg float32    `json:"avg"`
+	Min float32    `json:"min"`
+	At  *TimeLocal `json:"at,omitempty"`
 }
 
-type AlarmInfo struct {
+type ZoneAlarm struct {
 	Zone
 	Temperature
 	Location  float32          `json:"location"`
@@ -38,4 +38,16 @@ type Zone struct {
 	Tag       string  `json:"tag,omitempty"`
 	Relays    []Relay `json:"relays,omitempty"`
 	ZoneExtend
+}
+
+type ZoneTemp struct {
+	Zone
+	Temperature
+}
+
+type ZonesTemp struct {
+	DeviceId  string     `json:"device_id"`
+	Host      string     `json:"host,omitempty"`
+	CreatedAt string     `json:"created_at"`
+	Zones     []ZoneTemp `json:"zones"`
 }
