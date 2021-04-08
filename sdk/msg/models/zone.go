@@ -15,6 +15,13 @@ type ZoneAlarm struct {
 	AlarmType DefenceAreaState `json:"alarm_type"`
 }
 
+type ZonesAlarm struct {
+	Zones     []ZoneAlarm `json:"zones"`
+	DeviceId  string      `json:"device_id"`
+	Host      string      `json:"host,omitempty"`
+	CreatedAt string      `json:"created_at"`
+}
+
 type ZoneExtend struct {
 	Warehouse string `json:"warehouse,omitempty"`
 	Group     string `json:"group,omitempty"`
@@ -50,4 +57,22 @@ type ZonesTemp struct {
 	Host      string     `json:"host,omitempty"`
 	CreatedAt string     `json:"created_at"`
 	Zones     []ZoneTemp `json:"zones"`
+}
+
+type ChannelSignal struct {
+	DeviceId   string    `json:"device_id"`
+	ChannelId  int32     `json:"channel_id"`
+	RealLength float32   `json:"real_length"`
+	Host       string    `json:"host,omitempty"`
+	Signal     []float32 `json:"signal"`
+	CreatedAt  string    `json:"created_at"`
+}
+
+type ChannelEvent struct {
+	Host          string     `json:"host,omitempty"`
+	ChannelId     int32      `json:"channel_id"`
+	DeviceId      string     `json:"device_id"`
+	EventType     FiberState `json:"event_type"`
+	ChannelLength float32    `json:"channel_length"`
+	CreatedAt     string     `json:"created_at"`
 }

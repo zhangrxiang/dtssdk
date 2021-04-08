@@ -1,13 +1,17 @@
 package request
 
-type PingRequest struct{}
+type PingReq struct{}
+
+func NewPing() *PingReq {
+	return &PingReq{}
+}
 
 // Serialize serializes Message into bytes.
-func (t *PingRequest) Serialize() ([]byte, error) {
+func (t *PingReq) Serialize() ([]byte, error) {
 	return []byte{}, nil
 }
 
 // MessageNumber returns message type number.
-func (t *PingRequest) MessageNumber() byte {
+func (t *PingReq) MessageNumber() byte {
 	return byte(250)
 }

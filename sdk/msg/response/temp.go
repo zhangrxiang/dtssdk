@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type TempRequest struct {
+type TempResp struct {
 	ctx       context.Context
 	cancel    context.CancelFunc
 	Request   *models.ZoneTempNotify
@@ -17,9 +17,9 @@ type TempRequest struct {
 	ZonesTemp *models.ZonesTemp
 }
 
-func NewTempRequest(ctx context.Context) *TempRequest {
+func NewTemp(ctx context.Context) *TempResp {
 	ctx, cancel := context.WithCancel(ctx)
-	t := &TempRequest{
+	t := &TempResp{
 		ctx:     ctx,
 		cancel:  cancel,
 		Request: new(models.ZoneTempNotify),
@@ -29,7 +29,7 @@ func NewTempRequest(ctx context.Context) *TempRequest {
 	return t
 }
 
-func (t *TempRequest) Subscribe(call func(*models.ZonesTemp)) {
+func (t *TempResp) Subscribe(call func(*models.ZonesTemp)) {
 	go func() {
 		ticket := time.NewTicker(time.Minute)
 		for {
@@ -48,13 +48,13 @@ func (t *TempRequest) Subscribe(call func(*models.ZonesTemp)) {
 	}()
 }
 
-func (t *TempRequest) Handle(ctx context.Context, _ tao.WriteCloser) {
+func (t *TempResp) Handle(ctx context.Context, _ tao.WriteCloser) {
 	content := tao.MessageFromContext(ctx)
-	r := content.(*TempRequest).Request
+	r := content.(*TempResp).Request
 	if t.ZonesTemp == nil || len(t.ZonesTemp.Zones) != len(r.Zones) {
 		t.ZonesTemp = &models.ZonesTemp{
 			DeviceId:  r.DeviceID,
-			CreatedAt: time.Unix(r.Timestamp/1000, 0).Format("2006-01-02 15:04:05"),
+			CreatedAt: time.Unix(r.Timestamp/1000, 0).Format(LocalTimeFormat),
 			Zones:     make([]models.ZoneTemp, len(r.Zones)),
 		}
 	}
@@ -77,17 +77,17 @@ func (t *TempRequest) Handle(ctx context.Context, _ tao.WriteCloser) {
 	}
 }
 
-func (t *TempRequest) Unmarshaler(data []byte) (tao.Message, error) {
+func (t *TempResp) Unmarshaler(data []byte) (tao.Message, error) {
 	err := proto.Unmarshal(data, t.Request)
 	return t, err
 }
 
 // Serialize serializes Message into bytes.
-func (t *TempRequest) Serialize() ([]byte, error) {
+func (t *TempResp) Serialize() ([]byte, error) {
 	return []byte{}, nil
 }
 
 // MessageNumber returns message type number.
-func (t *TempRequest) MessageNumber() byte {
+func (t *TempResp) MessageNumber() byte {
 	return byte(models.MsgID_ZoneTempNotifyID)
 }

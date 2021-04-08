@@ -17,20 +17,17 @@ type TopicType byte
 
 const (
 	TopicTemp TopicType = iota
-	TopicSign
+	TopicSignal
 	TopicAlarm
 	TopicEvent
+	TopicZones
+	TopicDeviceId
 )
 
 type App struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	Option
-	EnableAlarm bool
-	EnableSign  bool
-	EnableTemp  bool
-	EnableEvent bool
-
 	conn  *tao.ClientConn
 	group *sync.WaitGroup
 }
@@ -63,7 +60,7 @@ func (a *App) Ping() {
 			a.group.Done()
 		}()
 		for {
-			err := a.conn.Write(&request.PingRequest{})
+			err := a.conn.Write(&request.PingReq{})
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -79,7 +76,6 @@ func (a *App) Run() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println("success")
 	onConnect := tao.OnConnectOption(func(conn tao.WriteCloser) bool {
 		a.Ping()
 		_ = conn.Write(&request.DeviceRequest{Request: &models.SetDeviceRequest{
@@ -107,70 +103,29 @@ func (a *App) Run() {
 	a.group.Wait()
 }
 
-func (a *App) SetTempSignalNotify(f func(*models.TempSignalNotify)) {
-	a.group.Add(1)
-	defer func() {
-		a.group.Done()
-		fmt.Println("sign done")
-	}()
+func (a *App) Publish(topic TopicType) {
+	switch topic {
 
-	s := response.SignResponse{
-		Request: new(models.TempSignalNotify),
-		Device:  new(models.SetDeviceRequest),
-		Value:   make(chan *models.TempSignalNotify, 10),
 	}
-	tao.Register(s.MessageNumber(), s.Unmarshaler, s.Handle)
-	go func(f func(*models.TempSignalNotify)) {
-		t := time.NewTicker(time.Minute)
-		for {
-			select {
-			case v := <-s.Value:
-				t.Reset(time.Minute)
-				f(v)
-			case <-t.C:
-				a.conn.Close()
-				return
-			}
-		}
-	}(f)
 }
-
-func (a *App) SetZoneTempNotify(f func(*models.ZonesTemp)) {
-	//a.group.Add(1)
-	//defer func() {
-	//	a.group.Done()
-	//	fmt.Println("temp done")
-	//}()
-	//s := response.TempRequest{
-	//	Request: new(models.ZoneTempNotify),
-	//	Value:   make(chan *models.ZonesTemp, 10),
-	//}
-	//tao.Register(s.MessageNumber(), s.Unmarshaler, s.Handle)
-	//go func(f func(*models.ZonesTemp)) {
-	//	t := time.NewTicker(time.Minute)
-	//	for {
-	//		select {
-	//		case v := <-s.Value:
-	//			t.Reset(time.Minute)
-	//			v.Host = a.Ip
-	//			f(v)
-	//			fmt.Println(v.Host)
-	//		case <-t.C:
-	//			a.conn.Close()
-	//		}
-	//	}
-	//}(f)
-}
-
-func (a *App) Subscribe(topic TopicType, f func()) {
+func (a *App) Subscribe(topic TopicType, call func(result interface{})) {
 	switch topic {
 	case TopicTemp:
-		response.NewTempRequest(a.ctx).Subscribe(func(temp *models.ZonesTemp) {
-			fmt.Println("->  ", len(temp.Zones))
+		response.NewTemp(a.ctx).Subscribe(func(temp *models.ZonesTemp) {
+			call(temp)
 		})
-	case TopicSign:
+	case TopicSignal:
+		response.NewSignal(a.ctx).Subscribe(func(signal *models.ChannelSignal) {
+			call(signal)
+		})
 	case TopicAlarm:
+		response.NewAlarm(a.ctx).Subscribe(func(alarms *models.ZonesAlarm) {
+			call(alarms)
+		})
 	case TopicEvent:
+		response.NewEvent(a.ctx).Subscribe(func(e *models.ChannelEvent) {
+			call(e)
+		})
 	default:
 	}
 }
