@@ -47,6 +47,12 @@ type Zone struct {
 	ZoneExtend
 }
 
+type Zones struct {
+	ChannelId int32  `json:"channel_id,omitempty"`
+	Host      string `json:"host,omitempty"`
+	Zones     []*Zone
+}
+
 type ZoneTemp struct {
 	Zone
 	Temperature

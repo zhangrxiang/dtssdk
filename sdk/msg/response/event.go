@@ -31,15 +31,10 @@ func NewEvent(ctx context.Context) *EventResp {
 
 func (r *EventResp) Subscribe(call func(*models.ChannelEvent)) {
 	go func() {
-		ticket := time.NewTicker(time.Minute)
 		for {
 			select {
-			case <-ticket.C:
-				log.Println("get alarm timeout 1 minute,so break")
-				return
 			case v := <-r.Value:
 				call(v)
-				ticket.Reset(time.Minute)
 			case <-r.ctx.Done():
 				log.Println("cancel...", r.ctx.Err())
 				return
